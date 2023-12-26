@@ -6,6 +6,7 @@ import {
     Context,
 } from "aws-lambda";
 import { DataAccessor } from "./accessor/data_accessor";
+import { IndexedDataAccessor } from "./accessor/indexed_data_accessor";
 import { SecretsAccessor } from "./accessor/secrets_accessor";
 import { BinahBotCommand } from "./command/binahbot_command";
 import { LorAutocomplete } from "./command/lor_autocomplete";
@@ -28,7 +29,9 @@ import { EnvVarRetriever } from "./util/env_var_retriever";
 const envVarRetriever: EnvVarRetriever = new EnvVarRetriever();
 const secretsManager: SecretsManager = new SecretsManager({});
 
-const dataAccessor: DataAccessor = new DataAccessor();
+const DEMO_INDEXED: boolean = true;
+const dataAccessor: DataAccessor = DEMO_INDEXED ? new IndexedDataAccessor() : new DataAccessor();
+
 const secretsAccessor: SecretsAccessor = new SecretsAccessor(
     envVarRetriever.getRequired(SECRETS_ID_ENV_KEY),
     secretsManager

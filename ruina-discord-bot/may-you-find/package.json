@@ -1,0 +1,14 @@
+{
+  "name": "may-you-find-build",
+  "version": "0.1.0",
+  "description": "Build preinitialized autocompletion for LOR",
+  "private": "true",
+  "scripts": {
+    "build": "cp ../src/data/lowerAutocomplete.json src && wasm-pack build -t nodejs && npm run wizer",
+    "clean": "rm -r pkg && cargo clean",
+    "wizer": "wizer pkg/may_you_find_bg.wasm -o pkg/t.wasm && mv pkg/t.wasm pkg/may_you_find_bg.wasm",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}

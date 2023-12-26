@@ -8,6 +8,7 @@ import {
     DecoratedPassive,
     KeyPage,
     Localization,
+    LookupResult,
     Passive,
 } from "@ghoulean/ruina-common";
 import {
@@ -96,6 +97,31 @@ writeDataFile(`ambiguousResults.json`, ambiguousResultsDataBlob);
 // Autocomplete
 writeDataFile(`autocomplete.json`, {
     data: Object.keys(lookupResults),
+});
+
+
+// This is important for the indexed lookup to work correctly,
+// since it doesn't check case by itself
+
+// Make the query lookup domain lowercase
+let lowerLookupResults: QueryMapperLookupTable = {};
+Object.entries(lookupResults).map(entry => {
+    let [key, value]: [string, LookupResult[]] = entry;
+    let key_lower: string = key.toLowerCase();
+    // Unfortunately some keys are mapped together when lowercase, e.g. variants of "hello?"
+    // This will require using both the index's best results and the original query for disambiguation
+    if (lowerLookupResults.hasOwnProperty(key_lower)) {
+        lowerLookupResults[key_lower] = lowerLookupResults[key_lower].concat(value);
+    }
+    else {
+        lowerLookupResults[key_lower] = value;
+    }
+});
+
+writeDataFile(`lowerLookupResults.json`, lowerLookupResults);
+
+writeDataFile(`lowerAutocomplete.json`, {
+    data: Object.keys(lowerLookupResults)
 });
 
 console.log("Done");

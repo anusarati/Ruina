@@ -1,0 +1,16 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - npm install --prefix ruina-common
+      - npm install --prefix ruina-reparser
+      - npm install --prefix ruina-discord-bot-onetime-setup
+      - npm install --prefix ruina-discord-bot
+  build:
+    commands:
+      - npm run build --prefix ruina-common
+      - npm run build --prefix ruina-reparser
+      - npm run build --prefix ruina-discord-bot-onetime-setup
+      - npm run copy:data --prefix ruina-discord-bot
+      - npm run build:full --prefix ruina-discord-bot
+      - npm run build --prefix ruina-cdk

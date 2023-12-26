@@ -8,7 +8,8 @@ import {
 } from "@ghoulean/ruina-common";
 import * as fastestLevenshtein from "fastest-levenshtein";
 import { default as __DISAMBIGUATION_RESULTS } from "../data/ambiguousResults.json";
-import { default as __AUTOCOMPLETE } from "../data/autocomplete.json";
+// Reduce output size for demo (accepting the proposal will make this import unnecessary)
+//import { default as __AUTOCOMPLETE } from "../data/autocomplete.json";
 import { default as __CN_ABNO } from "../data/cn/abno.json";
 import { default as __CN_COMBAT } from "../data/cn/combat.json";
 import { default as __CN_KEYPAGES } from "../data/cn/keypages.json";
@@ -25,14 +26,14 @@ import { default as __KR_ABNO } from "../data/kr/abno.json";
 import { default as __KR_COMBAT } from "../data/kr/combat.json";
 import { default as __KR_KEYPAGES } from "../data/kr/keypages.json";
 import { default as __KR_PASSIVE } from "../data/kr/passive.json";
-import { default as __LOOKUP_RESULTS } from "../data/queryLookupResults.json";
+//import { default as __LOOKUP_RESULTS } from "../data/queryLookupResults.json";
 import { default as __TRCN_ABNO } from "../data/trcn/abno.json";
 import { default as __TRCN_COMBAT } from "../data/trcn/combat.json";
 import { default as __TRCN_KEYPAGES } from "../data/trcn/keypages.json";
 import { default as __TRCN_PASSIVE } from "../data/trcn/passive.json";
 import { DisambiguationResults } from "../model/disambiguation_result";
 
-type QueryToLookupResult = {
+export type QueryToLookupResult = {
     [key: string]: LookupResult[];
 };
 
@@ -73,8 +74,8 @@ type LevenshteinResults = {
     score: number;
 };
 
-const LOOKUP_RESULTS: QueryToLookupResult =
-    __LOOKUP_RESULTS as QueryToLookupResult;
+const LOOKUP_RESULTS: QueryToLookupResult = {};
+    //__LOOKUP_RESULTS as QueryToLookupResult;
 
 const CN_ABNO: QueryToDecoratedAbnoPage = __CN_ABNO as QueryToDecoratedAbnoPage;
 const EN_ABNO: QueryToDecoratedAbnoPage = __EN_ABNO as QueryToDecoratedAbnoPage;
@@ -117,31 +118,31 @@ const TRCN_PASSIVE: QueryToDecoratedPassive =
     __TRCN_PASSIVE as QueryToDecoratedPassive;
 
 const LOCALIZATION_TO_DECORATED_ABNO_PAGE: LocalizationToQueryDecoratedAbnoPage =
-    {
-        [Localization.CHINESE_SIMPLIFIED]: CN_ABNO,
-        [Localization.CHINESE_TRADITIONAL]: TRCN_ABNO,
-        [Localization.ENGLISH]: EN_ABNO,
-        [Localization.JAPANESE]: JP_ABNO,
-        [Localization.KOREAN]: KR_ABNO,
-    };
+{
+    [Localization.CHINESE_SIMPLIFIED]: CN_ABNO,
+    [Localization.CHINESE_TRADITIONAL]: TRCN_ABNO,
+    [Localization.ENGLISH]: EN_ABNO,
+    [Localization.JAPANESE]: JP_ABNO,
+    [Localization.KOREAN]: KR_ABNO,
+};
 
 const LOCALIZATION_TO_DECORATED_COMBAT_PAGE: LocalizationToQueryDecoratedCombatPage =
-    {
-        [Localization.CHINESE_SIMPLIFIED]: CN_COMBAT,
-        [Localization.CHINESE_TRADITIONAL]: TRCN_COMBAT,
-        [Localization.ENGLISH]: EN_COMBAT,
-        [Localization.JAPANESE]: JP_COMBAT,
-        [Localization.KOREAN]: KR_COMBAT,
-    };
+{
+    [Localization.CHINESE_SIMPLIFIED]: CN_COMBAT,
+    [Localization.CHINESE_TRADITIONAL]: TRCN_COMBAT,
+    [Localization.ENGLISH]: EN_COMBAT,
+    [Localization.JAPANESE]: JP_COMBAT,
+    [Localization.KOREAN]: KR_COMBAT,
+};
 
 const LOCALIZATION_TO_DECORATED_KEY_PAGE: LocalizationToQueryDecoratedKeyPage =
-    {
-        [Localization.CHINESE_SIMPLIFIED]: CN_KEYPAGES,
-        [Localization.CHINESE_TRADITIONAL]: TRCN_KEYPAGES,
-        [Localization.ENGLISH]: EN_KEYPAGES,
-        [Localization.JAPANESE]: JP_KEYPAGES,
-        [Localization.KOREAN]: KR_KEYPAGES,
-    };
+{
+    [Localization.CHINESE_SIMPLIFIED]: CN_KEYPAGES,
+    [Localization.CHINESE_TRADITIONAL]: TRCN_KEYPAGES,
+    [Localization.ENGLISH]: EN_KEYPAGES,
+    [Localization.JAPANESE]: JP_KEYPAGES,
+    [Localization.KOREAN]: KR_KEYPAGES,
+};
 
 const LOCALIZATION_TO_DECORATED_PASSIVE: LocalizationToQueryDecoratedPassive = {
     [Localization.CHINESE_SIMPLIFIED]: CN_PASSIVE,
@@ -151,14 +152,15 @@ const LOCALIZATION_TO_DECORATED_PASSIVE: LocalizationToQueryDecoratedPassive = {
     [Localization.KOREAN]: KR_PASSIVE,
 };
 
-const AUTOCOMPLETE: string[] = __AUTOCOMPLETE.data;
+// Reduce output size for demo
+const AUTOCOMPLETE: string[] = [];//__AUTOCOMPLETE.data;
 const DISAMBIGUATION_RESULTS: { [key: string]: DisambiguationResults } =
     __DISAMBIGUATION_RESULTS as { [key: string]: DisambiguationResults };
 
 const FUZZY_MATCHING_DISTANCE = 2;
 
 export class DataAccessor {
-    constructor() {}
+    constructor() { }
 
     public lookup(query: string, preferredLocale: Localization): LookupResult {
         let lookupResults: LookupResult[] | undefined = LOOKUP_RESULTS[query];
@@ -253,11 +255,20 @@ export class DataAccessor {
         return retVal.sort((a, b) => {
             return (
                 this.autocompleteDistance(cleanQuery, a) -
-                    this.autocompleteDistance(cleanQuery, b) ||
+                this.autocompleteDistance(cleanQuery, b) ||
                 a.length - b.length ||
                 a.localeCompare(b)
             );
         });
+    }
+
+    public autocomplete_top(query: string, requested: number, locale: Localization): LookupResult[] {
+        // mock original behavior in LorAutocomplete
+        // not supposed to actually work in the demo because the data imports have been removed
+        return this.autocomplete(query).slice(0, requested)
+            .map((str: string) => {
+                return this.lookup(str, locale);
+            });
     }
 
     private getLocaledAbnoMapping(

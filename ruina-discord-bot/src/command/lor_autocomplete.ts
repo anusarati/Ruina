@@ -17,12 +17,7 @@ export class LorAutocomplete {
 
     public autocomplete(request: Request): AutocompleteResult {
         const query: string = request.commandArgs[QUERY_COMMAND_ARG] as string;
-        const autocompleteResults: string[] = this.dataAccessor
-            .autocomplete(query)
-            .slice(0, AUTOCOMPLETE_LIMIT)
-            .map((str: string) => {
-                return this.dataAccessor.lookup(str, request.locale);
-            })
+        const autocompleteResults: string[] = this.dataAccessor.autocomplete_top(query, AUTOCOMPLETE_LIMIT, request.locale)
             .map((lookupResult: LookupResult) => {
                 return lookupResult.displayQuery ?? lookupResult.query;
             });
